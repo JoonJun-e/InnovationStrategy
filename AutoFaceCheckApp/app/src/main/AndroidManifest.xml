@@ -18,14 +18,9 @@
         <activity android:name=".check_attendance_statueActivity"/>
         <activity android:name=".Check_attendance1Activity" />
         <activity android:name=".Check_attendance2Activity" />
-        <activity android:name=".Check_attendance3Activity" />
+        <activity android:name=".Introduce" />
         <activity android:name=".main_activityActivity" />
         <activity android:name=".UploadActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>

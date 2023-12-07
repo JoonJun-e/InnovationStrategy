@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import android.webkit.MimeTypeMap;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -29,7 +30,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 
-public class UploadActivity extends Activity {
+public class UploadActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
@@ -42,6 +43,7 @@ public class UploadActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_image);
+        setTitle("이미지 업로드");
 
         btnUpload = findViewById(R.id.button2);
         imageView = findViewById(R.id.imageView);

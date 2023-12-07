@@ -30,6 +30,12 @@ public class main_activityActivity extends AppCompatActivity {
         Toast.makeText(this, "출석체크 할 과목을 선택해주세요", Toast.LENGTH_LONG).show();
         startActivity(Check_attendance1);
     }
+    public void click25(View v){
+        Intent Check_attendance1 = new Intent(main_activityActivity.this, Introduce.class);
+        Toast.makeText(this, "소개페이지입니다.", Toast.LENGTH_LONG).show();
+        startActivity(Check_attendance1);
+    }
+
 
 }
 
