@@ -49,15 +49,24 @@ public class UploadActivity extends AppCompatActivity {
         btnUpload = findViewById(R.id.button2);
         imageView = findViewById(R.id.imageView);  // 이미지뷰 초기화
 
-        btnUpload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                checkPermissionAndOpenGallery();
-            }
-        });
+        // 학번을 가져오기
+        Intent intent = getIntent();
+        if (intent != null) {
+            String studentId = intent.getStringExtra(MainActivity.EXTRA_STUDENT_ID);
+
+            btnUpload.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    checkPermissionAndOpenGallery(studentId);
+                }
+            });
+        } else {
+            // 학번이 전달되지 않았을 때의 처리
+            Toast.makeText(this, "학번이 전달되지 않았습니다.", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private void checkPermissionAndOpenGallery() {
+    private void checkPermissionAndOpenGallery(String studentId) {
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
