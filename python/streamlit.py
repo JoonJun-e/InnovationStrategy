@@ -68,49 +68,54 @@ def main() :
         
         if st.button("자동 출석"):
             st.write('얼굴 유사도 분석 중..')
+            try:
+                # 이미지 로딩 및 얼굴 인코딩
+                phone_img123 = fr.load_image_file(phone_path + '\\최성준.jpg')
+                phone_img = cv2.cvtColor(phone_img123, cv2.COLOR_BGR2RGB)
+                
+                cyber_img123 = fr.load_image_file(cyber_path + '\\{}.JPG'.format(st.session_state.user_name))
+                cyber_img = cv2.cvtColor(cyber_img123, cv2.COLOR_BGR2RGB)
+                
+                faceLoc = face_recognition.face_locations(phone_img)[0]
+                encodeElon = face_recognition.face_encodings(phone_img)[0]
+                cv2.rectangle(phone_img, (faceLoc[3], faceLoc[0]), (faceLoc[1], faceLoc[2]), (255, 0, 255), 2)
+
+                faceLocTest = face_recognition.face_locations(cyber_img)[0]
+                encodeTest = face_recognition.face_encodings(cyber_img)[0]
+                cv2.rectangle(cyber_img, (faceLocTest[3], faceLocTest[0]), (faceLocTest[1], faceLocTest[2]), (255, 0, 255), 2)
+
+                # 얼굴 유사도 분석
+                results = face_recognition.compare_faces([encodeElon], encodeTest)
+                faceDis = face_recognition.face_distance([encodeElon], encodeTest)
+
+                if faceDis[0] > 0.3:
+                    total = True
+                else:
+                    total = False
+
+                faceDis[0] = round(faceDis[0], 3)
+                cv2.putText(phone_img123, f'{total} {1 - faceDis[0]}', (70, 70), cv2.FONT_HERSHEY_COMPLEX, 3, (30, 30, 255), 3)
+
+                # 이미지 이어 붙이기
+                phone_img123 = cv2.resize(phone_img123, (500, 500))
+                cyber_img123 = cv2.resize(cyber_img123, (500, 500))
+
+                new_image = Image.new("RGB", (cyber_img123.shape[1] + phone_img123.shape[1], max(cyber_img123.shape[0], phone_img123.shape[0])))
+                new_image.paste(Image.fromarray(cyber_img123), (0, 0))
+                new_image.paste(Image.fromarray(phone_img123), (cyber_img123.shape[1], 0))
+
+                st.image(new_image)
+
+                cv2.waitKey(0)
+                if total:
+                    st.write("자동 출석이 완료하였습니다.")
+                else:
+                    st.write("얼굴이 유사하지 않아 수동출석해주시기 바랍니다.")
             
-            # 이미지 로딩 및 얼굴 인코딩
-            phone_img123 = fr.load_image_file(phone_path + '\\김민걸.jpg')
-            phone_img = cv2.cvtColor(phone_img123, cv2.COLOR_BGR2RGB)
-            
-            cyber_img123 = fr.load_image_file(cyber_path + '\\{}.JPG'.format(st.session_state.user_name))
-            cyber_img = cv2.cvtColor(cyber_img123, cv2.COLOR_BGR2RGB)
-            
-            faceLoc = face_recognition.face_locations(phone_img)[0]
-            encodeElon = face_recognition.face_encodings(phone_img)[0]
-            cv2.rectangle(phone_img, (faceLoc[3], faceLoc[0]), (faceLoc[1], faceLoc[2]), (255, 0, 255), 2)
+            except:
+                st.write("해당 학생의 이미지가 없습니다.")
+                st.write("이미지를 업로드 해주시기 바랍니다.")
 
-            faceLocTest = face_recognition.face_locations(cyber_img)[0]
-            encodeTest = face_recognition.face_encodings(cyber_img)[0]
-            cv2.rectangle(cyber_img, (faceLocTest[3], faceLocTest[0]), (faceLocTest[1], faceLocTest[2]), (255, 0, 255), 2)
-
-            # 얼굴 유사도 분석
-            results = face_recognition.compare_faces([encodeElon], encodeTest)
-            faceDis = face_recognition.face_distance([encodeElon], encodeTest)
-
-            if faceDis[0] > 0.7:
-                total = True
-            else:
-                total = False
-
-            faceDis[0] = round(faceDis[0], 3)
-            cv2.putText(phone_img123, f'{total} {1 - faceDis[0]}', (30, 30), cv2.FONT_HERSHEY_COMPLEX, 1, (30, 30, 255), 2)
-
-            # 이미지 이어 붙이기
-            phone_img123 = cv2.resize(phone_img123, (500, 500))
-            cyber_img123 = cv2.resize(cyber_img123, (500, 500))
-
-            new_image = Image.new("RGB", (cyber_img123.shape[1] + phone_img123.shape[1], max(cyber_img123.shape[0], phone_img123.shape[0])))
-            new_image.paste(Image.fromarray(cyber_img123), (0, 0))
-            new_image.paste(Image.fromarray(phone_img123), (cyber_img123.shape[1], 0))
-
-            st.image(new_image)
-
-            cv2.waitKey(0)
-            if total:
-                st.write("자동 출석이 완료하였습니다.")
-            else:
-                st.write("얼굴이 유사하지 않아 수동출석해주시기 바랍니다.")
 
     
 if __name__ == '__main__' :
