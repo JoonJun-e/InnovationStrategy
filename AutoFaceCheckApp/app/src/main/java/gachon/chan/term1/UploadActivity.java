@@ -1,3 +1,4 @@
+// UploadActivity.java
 package gachon.chan.term1;
 
 import android.app.Activity;
@@ -36,7 +37,7 @@ public class UploadActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 1;
 
     private Button btnUpload;
-    private ImageView imageView;
+    private ImageView imageView;  // 이미지뷰 선언
     private Bitmap selectedImage;
 
     @Override
@@ -46,7 +47,7 @@ public class UploadActivity extends AppCompatActivity {
         setTitle("이미지 업로드");
 
         btnUpload = findViewById(R.id.button2);
-        imageView = findViewById(R.id.imageView);
+        imageView = findViewById(R.id.imageView);  // 이미지뷰 초기화
 
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,7 +95,12 @@ public class UploadActivity extends AppCompatActivity {
             byte[] imageData = baos.toByteArray();
 
             if (allowedFile(selectedImageUri)) {
-                new UploadTask().execute(imageData);
+                // 학번을 가져와서 파일 이름 생성
+                String studentId = getIntent().getStringExtra(MainActivity.EXTRA_STUDENT_ID);
+                String fileName = studentId + ".jpg";
+
+                // 업로드 태스크 시작
+                new UploadTask().execute(imageData, fileName);
             } else {
                 Toast.makeText(this, "Invalid file type", Toast.LENGTH_SHORT).show();
             }
@@ -111,15 +117,17 @@ public class UploadActivity extends AppCompatActivity {
         return fileExtension != null && Arrays.asList("png", "jpg", "jpeg", "gif").contains(fileExtension.toLowerCase());
     }
 
-    private class UploadTask extends AsyncTask<byte[], Void, Void> {
+    private class UploadTask extends AsyncTask<Object, Void, Void> {
         @Override
-        protected Void doInBackground(byte[]... params) {
+        protected Void doInBackground(Object... params) {
             try {
-                byte[] imageData = params[0];
+                byte[] imageData = (byte[]) params[0];
+                String fileName = (String) params[1];  // 파일 이름 가져오기
+
                 String boundary = "MyBoundaryString";  // 임의의 boundary 문자열로 수정
                 String lineEnd = "\r\n";
 
-                URL url = new URL("http://172.20.10.12:5000/upload");
+                URL url = new URL("http://192.9.67.107:5000/upload");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
@@ -127,7 +135,7 @@ public class UploadActivity extends AppCompatActivity {
 
                 DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
                 outputStream.writeBytes("--" + boundary + lineEnd);
-                outputStream.writeBytes("Content-Disposition: form-data; name=\"image\"; filename=\"image.jpg\"" + lineEnd);
+                outputStream.writeBytes("Content-Disposition: form-data; name=\"image\"; filename=\"" + fileName + "\"" + lineEnd);
                 outputStream.writeBytes("Content-Type: image/jpeg" + lineEnd);
                 outputStream.writeBytes(lineEnd);
                 outputStream.write(imageData);
@@ -156,4 +164,6 @@ public class UploadActivity extends AppCompatActivity {
             Toast.makeText(UploadActivity.this, message, Toast.LENGTH_SHORT).show();
         }
     }
+
 }
+
